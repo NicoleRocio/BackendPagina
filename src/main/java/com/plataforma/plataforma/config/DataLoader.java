@@ -4,13 +4,18 @@ import com.plataforma.plataforma.model.Empleado;
 import com.plataforma.plataforma.model.Rol;
 import com.plataforma.plataforma.model.Usuario;
 import com.plataforma.plataforma.model.Producto;
+import com.plataforma.plataforma.model.Asistencia;
 import com.plataforma.plataforma.repository.EmpleadoRepository;
 import com.plataforma.plataforma.repository.RolRepository;
 import com.plataforma.plataforma.repository.UsuarioRepository;
 import com.plataforma.plataforma.repository.ProductoRepository;
+import com.plataforma.plataforma.repository.AsistenciaRepository;
+
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,15 +26,18 @@ public class DataLoader {
     private final RolRepository rolRepository;
     private final EmpleadoRepository empleadoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final AsistenciaRepository asistenciaRepository;
 
     public DataLoader(ProductoRepository productoRepository,
                       RolRepository rolRepository,
                       EmpleadoRepository empleadoRepository,
-                      UsuarioRepository usuarioRepository) {
+                      UsuarioRepository usuarioRepository,
+                      AsistenciaRepository asistenciaRepository) {
         this.productoRepository = productoRepository;
         this.rolRepository = rolRepository;
         this.empleadoRepository = empleadoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.asistenciaRepository = asistenciaRepository;
     }
 
     @PostConstruct
@@ -91,6 +99,28 @@ public class DataLoader {
             user2.setNombre(emp2.getNombre());
             user2.setEmpleado(emp2);
             usuarioRepository.save(user2);
+        }
+
+        // ----- Asistencias -----
+        if (asistenciaRepository.count() == 0) {
+            Empleado emp1 = empleadoRepository.findAll().get(0);
+            Empleado emp2 = empleadoRepository.findAll().get(1);
+
+            Asistencia asis1 = new Asistencia();
+            asis1.setEmpleado(emp1);
+            asis1.setFecha(LocalDate.of(2025, 10, 28));
+            asis1.setHoraIngreso(LocalTime.of(8, 0));
+            asis1.setHoraSalida(LocalTime.of(17, 0));
+            asis1.setEstado("Presente");
+            asistenciaRepository.save(asis1);
+
+            Asistencia asis2 = new Asistencia();
+            asis2.setEmpleado(emp2);
+            asis2.setFecha(LocalDate.of(2025, 10, 28));
+            asis2.setHoraIngreso(LocalTime.of(9, 0));
+            asis2.setHoraSalida(LocalTime.of(17, 30));
+            asis2.setEstado("Tardanza");
+            asistenciaRepository.save(asis2);
         }
     }
 }
