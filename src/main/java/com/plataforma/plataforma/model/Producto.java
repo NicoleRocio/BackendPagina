@@ -15,18 +15,28 @@ public class Producto {
     private String descripcion;
     private String sede;
     private int stock;
+    // ✅ Nuevo campo para almacenar el nombre del archivo
+    private String imagen;
 
     public Producto() {
     }
 
-    public Producto(String nombre, String descripcion, String sede, int stock) {
+    public Producto(String nombre, String descripcion, String sede, int stock, String imagen) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.sede = sede;
         this.stock = stock;
+        this.imagen = imagen;
     }
 
     // Getters y Setters
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
+    }
     public Long getId() {
         return id;
     }

@@ -29,10 +29,10 @@ public class DataLoader {
     private final AsistenciaRepository asistenciaRepository;
 
     public DataLoader(ProductoRepository productoRepository,
-                      RolRepository rolRepository,
-                      EmpleadoRepository empleadoRepository,
-                      UsuarioRepository usuarioRepository,
-                      AsistenciaRepository asistenciaRepository) {
+            RolRepository rolRepository,
+            EmpleadoRepository empleadoRepository,
+            UsuarioRepository usuarioRepository,
+            AsistenciaRepository asistenciaRepository) {
         this.productoRepository = productoRepository;
         this.rolRepository = rolRepository;
         this.empleadoRepository = empleadoRepository;
@@ -45,10 +45,34 @@ public class DataLoader {
 
         // ----- Productos -----
         if (productoRepository.count() == 0) {
-            productoRepository.save(new Producto("Laptop Lenovo ThinkPad", "Core i5, 8GB RAM, SSD 256GB", "Lima", 4));
-            productoRepository.save(new Producto("Monitor Samsung 24''", "Full HD, HDMI/VGA", "Lima", 10));
-            productoRepository.save(new Producto("Proyector Epson X05", "Resolución XGA, 3300 lúmenes", "Lima", 0));
-            productoRepository.save(new Producto("Impresora HP LaserJet", "Tóner negro, conexión Wi-Fi", "Lima", 5));
+
+            productoRepository.save(new Producto(
+                    "Laptop Lenovo ThinkPad",
+                    "Core i5, 8GB RAM, SSD 256GB",
+                    "Lima",
+                    4,
+                    "computadora.png"));
+
+            productoRepository.save(new Producto(
+                    "Monitor Samsung 24''",
+                    "Full HD, HDMI/VGA",
+                    "Lima",
+                    10,
+                    "computadora.png"));
+
+            productoRepository.save(new Producto(
+                    "Proyector Epson X05",
+                    "Resolución XGA, 3300 lúmenes",
+                    "Lima",
+                    0,
+                    "computadora.png"));
+
+            productoRepository.save(new Producto(
+                    "Impresora HP LaserJet",
+                    "Tóner negro, conexión Wi-Fi",
+                    "Lima",
+                    5,
+                    "computadora.png"));
         }
 
         // ----- Roles -----

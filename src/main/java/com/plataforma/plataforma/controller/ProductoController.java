@@ -2,22 +2,71 @@ package com.plataforma.plataforma.controller;
 
 import com.plataforma.plataforma.model.Producto;
 import com.plataforma.plataforma.repository.ProductoRepository;
+import com.plataforma.plataforma.service.FileStorageService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/productos")
-@CrossOrigin(origins = "*") // Permite llamadas desde cualquier frontend
+@CrossOrigin(origins = "*")
 public class ProductoController {
 
     private final ProductoRepository productoRepository;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     public ProductoController(ProductoRepository productoRepository) {
         this.productoRepository = productoRepository;
     }
 
-    // ✅ Listar todos los productos
+    // ✅ 1. Subir imagen sola (opcional)
+    @PostMapping("/upload")
+    public String subirImagen(@RequestParam("imagen") MultipartFile file) {
+        return fileStorageService.guardarImagen(file);
+    }
+
+    // ✅ 2. Crear producto con imagen
+    @PostMapping("/crear")
+    public Producto crearProducto(
+            @RequestPart("producto") Producto producto,
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen
+    ) {
+        if (imagen != null && !imagen.isEmpty()) {
+            String nombreImagen = fileStorageService.guardarImagen(imagen);
+            producto.setImagen(nombreImagen);
+        }
+        return productoRepository.save(producto);
+    }
+
+    // ✅ 3. Actualizar producto con nueva imagen
+    @PutMapping("/{id}")
+    public Producto actualizarProducto(
+            @PathVariable Long id,
+            @RequestPart("producto") Producto productoActualizado,
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen
+    ) {
+        return productoRepository.findById(id).map(producto -> {
+
+            producto.setNombre(productoActualizado.getNombre());
+            producto.setDescripcion(productoActualizado.getDescripcion());
+            producto.setSede(productoActualizado.getSede());
+            producto.setStock(productoActualizado.getStock());
+
+            if (imagen != null && !imagen.isEmpty()) {
+                String nombreImagen = fileStorageService.guardarImagen(imagen);
+                producto.setImagen(nombreImagen);
+            }
+
+            return productoRepository.save(producto);
+
+        }).orElseThrow(() -> new RuntimeException("Producto no encontrado con id " + id));
+    }
+
+    // ✅ Listar productos
     @GetMapping
     public List<Producto> listar() {
         return productoRepository.findAll();
@@ -30,31 +79,13 @@ public class ProductoController {
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con id " + id));
     }
 
-    // ✅ Crear un nuevo producto
-    @PostMapping
-    public Producto guardar(@RequestBody Producto producto) {
-        return productoRepository.save(producto);
-    }
-
-    // ✅ Actualizar un producto existente
-    @PutMapping("/{id}")
-    public Producto actualizar(@PathVariable Long id, @RequestBody Producto productoActualizado) {
-        return productoRepository.findById(id).map(producto -> {
-            producto.setNombre(productoActualizado.getNombre());
-            producto.setDescripcion(productoActualizado.getDescripcion());
-            producto.setSede(productoActualizado.getSede());
-            producto.setStock(productoActualizado.getStock());
-            return productoRepository.save(producto);
-        }).orElseThrow(() -> new RuntimeException("Producto no encontrado con id " + id));
-    }
-
-    // ✅ Eliminar un producto
+    // ✅ Eliminar
     @DeleteMapping("/{id}")
     public void eliminar(@PathVariable Long id) {
         productoRepository.deleteById(id);
     }
 
-    // ✅ Buscar productos por sede
+    // ✅ Buscar por sede
     @GetMapping("/sede/{sede}")
     public List<Producto> buscarPorSede(@PathVariable String sede) {
         return productoRepository.findBySede(sede);
