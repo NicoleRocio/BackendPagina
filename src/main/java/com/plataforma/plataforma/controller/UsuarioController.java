@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
@@ -50,4 +50,18 @@ public class UsuarioController {
             return ResponseEntity.noContent().<Void>build();
         }).orElse(ResponseEntity.notFound().build());
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Usuario userRequest) {
+        return usuarioRepository.findByUsername(userRequest.getUsername())
+                .map(usuario -> {
+                    if (usuario.getPassword().equals(userRequest.getPassword())) {
+                        return ResponseEntity.ok(usuario);
+                    } else {
+                        return ResponseEntity.status(401).body("Contraseña incorrecta");
+                    }
+                })
+                .orElse(ResponseEntity.status(404).body("Usuario no encontrado"));
+    }
+
 }

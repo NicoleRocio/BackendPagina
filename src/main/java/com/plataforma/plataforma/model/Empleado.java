@@ -1,5 +1,6 @@
 package com.plataforma.plataforma.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore; // 👈 Agrega esta importación
 import jakarta.persistence.*;
 import java.util.Set;
 
@@ -24,6 +25,7 @@ public class Empleado {
 
     // Relación uno a uno con Usuario
     @OneToOne(mappedBy = "empleado", cascade = CascadeType.ALL)
+    @JsonIgnore // 👈 Agrega esto para evitar la recursión con Usuario
     private Usuario usuario;
 
     // Getters y Setters
