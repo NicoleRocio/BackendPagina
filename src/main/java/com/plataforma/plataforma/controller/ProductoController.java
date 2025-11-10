@@ -1,5 +1,4 @@
 package com.plataforma.plataforma.controller;
-
 import com.plataforma.plataforma.model.Producto;
 import com.plataforma.plataforma.repository.ProductoRepository;
 import com.plataforma.plataforma.service.FileStorageService;
@@ -23,18 +22,23 @@ public class ProductoController {
         this.productoRepository = productoRepository;
     }
 
-    // ✅ 1. Subir imagen sola (opcional)
+    // ✅ Subir imagen
     @PostMapping("/upload")
     public String subirImagen(@RequestParam("imagen") MultipartFile file) {
         return fileStorageService.guardarImagen(file);
     }
 
-    // ✅ 2. Crear producto con imagen
+    @GetMapping("/test")
+    public String test() {
+        return "OK";
+    }
+
+    // ✅ Crear producto con imagen
     @PostMapping("/crear")
     public Producto crearProducto(
             @RequestPart("producto") Producto producto,
-            @RequestPart(value = "imagen", required = false) MultipartFile imagen
-    ) {
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
+
         if (imagen != null && !imagen.isEmpty()) {
             String nombreImagen = fileStorageService.guardarImagen(imagen);
             producto.setImagen(nombreImagen);
@@ -42,15 +46,14 @@ public class ProductoController {
         return productoRepository.save(producto);
     }
 
-    // ✅ 3. Actualizar producto con nueva imagen
+    // ✅ Actualizar producto
     @PutMapping("/{id}")
     public Producto actualizarProducto(
             @PathVariable Long id,
             @RequestPart("producto") Producto productoActualizado,
-            @RequestPart(value = "imagen", required = false) MultipartFile imagen
-    ) {
-        return productoRepository.findById(id).map(producto -> {
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
 
+        return productoRepository.findById(id).map(producto -> {
             producto.setNombre(productoActualizado.getNombre());
             producto.setDescripcion(productoActualizado.getDescripcion());
             producto.setSede(productoActualizado.getSede());
@@ -62,7 +65,6 @@ public class ProductoController {
             }
 
             return productoRepository.save(producto);
-
         }).orElseThrow(() -> new RuntimeException("Producto no encontrado con id " + id));
     }
 
@@ -72,7 +74,7 @@ public class ProductoController {
         return productoRepository.findAll();
     }
 
-    // ✅ Obtener producto por ID
+    // ✅ Buscar por ID
     @GetMapping("/{id}")
     public Producto obtenerPorId(@PathVariable Long id) {
         return productoRepository.findById(id)
@@ -89,5 +91,24 @@ public class ProductoController {
     @GetMapping("/sede/{sede}")
     public List<Producto> buscarPorSede(@PathVariable String sede) {
         return productoRepository.findBySede(sede);
+    }
+
+    // ✅ Reducir stock (CORREGIDO)
+    @PutMapping("/reducir-stock/{id}/{cantidad}")
+    public Producto reducirStock(
+            @PathVariable Long id,
+            @PathVariable int cantidad) {
+
+        return productoRepository.findById(id).map(producto -> {
+
+            if (producto.getStock() < cantidad) {
+                throw new RuntimeException("Stock insuficiente");
+            }
+
+            producto.setStock(producto.getStock() - cantidad);
+
+            return productoRepository.save(producto);
+
+        }).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
     }
 }

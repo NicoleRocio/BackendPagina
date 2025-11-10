@@ -49,28 +49,28 @@ public class DataLoader {
             productoRepository.save(new Producto(
                     "Laptop Lenovo ThinkPad",
                     "Core i5, 8GB RAM, SSD 256GB",
-                    "Lima",
+                    "COLEGIO_ZARATE",
                     4,
                     "computadora.png"));
 
             productoRepository.save(new Producto(
                     "Monitor Samsung 24''",
                     "Full HD, HDMI/VGA",
-                    "Lima",
+                    "COLEGIO_ZARATE",
                     10,
                     "computadora.png"));
 
             productoRepository.save(new Producto(
                     "Proyector Epson X05",
                     "Resolución XGA, 3300 lúmenes",
-                    "Lima",
+                    "COLEGIO_ZARATE",
                     0,
                     "computadora.png"));
 
             productoRepository.save(new Producto(
                     "Impresora HP LaserJet",
                     "Tóner negro, conexión Wi-Fi",
-                    "Lima",
+                    "ACADEMIA_ZARATE",
                     5,
                     "computadora.png"));
         }

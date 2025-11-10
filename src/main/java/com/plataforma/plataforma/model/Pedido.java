@@ -16,17 +16,22 @@ public class Pedido {
     private String cliente;
     private LocalDateTime fecha;
 
+    // ✅ Nuevo campo estado
+    private String estado = "En espera";
+
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<DetallePedido> detalles;
 
     public Pedido() {
         this.fecha = LocalDateTime.now();
+        this.estado = "En espera"; // ✅ por si acaso
     }
 
     public Pedido(String cliente, List<DetallePedido> detalles) {
         this.cliente = cliente;
         this.fecha = LocalDateTime.now();
+        this.estado = "En espera"; // ✅ por si acaso
         this.detalles = detalles;
     }
 
@@ -49,6 +54,14 @@ public class Pedido {
 
     public void setFecha(LocalDateTime fecha) {
         this.fecha = fecha;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     public List<DetallePedido> getDetalles() {
